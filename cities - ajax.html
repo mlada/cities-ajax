@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>cities</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.0.5/handlebars.min.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+</head>
+<body>
+<script id="cityTemplate" type="text/x-handlebars-template">
+    {{#each lists}}
+    <option>{{list}}</option>
+    {{/each}}
+</script>
+<div class="container">
+    <div class="row">
+        <div class="col-xs-12 col-md-12 text-center" >
+            <h2>Введите город</h2>
+            <input id="text" list="cities">
+                <datalist id="cities">
+
+                </datalist>
+            <button id="myButton">button</button>
+        </div>
+    </div>
+
+</div>
+<div id="container"></div>
+<script>
+
+
+
+    var xhr = new XMLHttpRequest();
+    var sendAjax = (url) =>{
+        xhr.open('GET',url);
+        xhr.send();
+        return xhr;
+    }
+    var sendCity = () => {
+                var obj = JSON.parse(xhr.responseText),
+                mas = [],
+                i = 0,
+                textWrap = document.getElementById('text'),
+                input = textWrap.value;
+                for (el in obj) {
+                    if (obj[el].name.toUpperCase().startsWith(input.toUpperCase())) {
+                        mas[i] = obj[el].name;
+                        i++;
+                    }
+                result = mas;
+                }
+    }
+    function removeAllChilds(el) {
+        if (el != null) {
+            if (el.childNodes) {
+                while(el.childNodes[0]){
+                    el.removeChild(el.childNodes[0]);
+                }
+            }
+        }
+    }
+    text.addEventListener('keyup', () => {
+        sendCity();
+        var res = result;
+        var datalist = document.getElementById('cities');
+        removeAllChilds(datalist);
+        var source = cityTemplate.innerHTML;
+        var templateFn = Handlebars.compile(source);
+        var template = templateFn({lists:
+            function(){
+                var array = [];
+                for(obj in res){
+                    array.push({list:res[obj]});
+                }
+                return array;
+            }});
+     datalist.innerHTML += template;
+    })
+
+    window.onload = ()=>{
+        let ar = sendAjax('https://raw.githubusercontent.com/smelukov/citiesTest/master/cities.json');
+        console.log('json loaded');
+    }
+</script>
+</body>
+</html>
